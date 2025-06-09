@@ -988,8 +988,16 @@ async def cmd_view_feedback(message: types.Message):
     text = ""
     for fb in feedbacks:
         fid, username, msg, lang, ts = fb
-        # ts уже строка формата "YYYY-MM-DD HH:MM:SS", выводим напрямую
-        line = f"{fid}. @{username or '—'} ({lang}, {ts}):\n{msg}\n\n"
+        # конвертация из ISO-строки в datetime
+        try:
+            dt = datetime.fromisoformat(ts)
+        except ValueError:
+            # на случай другого формата даты, просто оставляем строку
+            formatted = ts
+        else:
+            formatted = dt.strftime("%Y-%m-%d %H:%M")
+        line = f"{fid}. @{username or '—'} ({lang}, {formatted}):\n{msg}\n\n"
+
 
         # разбиваем по 3000 символов, чтобы не попасть в лимит Telegram
         if len(text) + len(line) > 3000:
