@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 # Инициализация бота
 bot = Bot(token=TOKEN)
-storage = MemoryStorage()
+storage = MemoryStorage()+    for fb in feedbacks:
 dp = Dispatcher(storage=storage)
 
 # Состояния FSM
@@ -987,9 +987,10 @@ async def cmd_view_feedback(message: types.Message):
     chunks = []
     text = ""
     for fb in feedbacks:
-        # fb = (id, username, message, language, timestamp)
         fid, username, msg, lang, ts = fb
-        line = f"{fid}. @{username or '—'} ({lang}, {ts.strftime('%Y-%m-%d %H:%M')}):\n{msg}\n\n"
+        # ts уже строка формата "YYYY-MM-DD HH:MM:SS", выводим напрямую
+        line = f"{fid}. @{username or '—'} ({lang}, {ts}):\n{msg}\n\n"
+
         # разбиваем по 3000 символов, чтобы не попасть в лимит Telegram
         if len(text) + len(line) > 3000:
             chunks.append(text)
