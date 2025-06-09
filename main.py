@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 # Инициализация бота
 bot = Bot(token=TOKEN)
-storage = MemoryStorage()+    for fb in feedbacks:
+storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
 # Состояния FSM
