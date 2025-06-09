@@ -1001,8 +1001,12 @@ async def cmd_view_feedback(message: types.Message):
         await message.answer(chunk)
 
 @dp.message(Command("whoami"))
-async def cmd_whoami(message: types.Message):
-    await message.answer(f"Ваш user_id: `{message.from_user.id}`", parse_mode="Markdown")
+async def cmd_whoami(message: Message):
+    # Просто отправляем ваш user_id и ничего больше
+    await message.answer(
+        f"Ваш user_id: `{message.from_user.id}`",
+        parse_mode="Markdown"
+    )
 
 
 
