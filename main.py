@@ -5,6 +5,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove, FSInputFile
 from aiogram.filters import Command, StateFilter
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message
 import logging
 import asyncio
 import sqlite3
@@ -1001,12 +1002,9 @@ async def cmd_view_feedback(message: types.Message):
         await message.answer(chunk)
 
 @dp.message(Command("whoami"))
-async def cmd_whoami(message: Message):
-    # Просто отправляем ваш user_id и ничего больше
-    await message.answer(
-        f"Ваш user_id: `{message.from_user.id}`",
-        parse_mode="Markdown"
-    )
+async def cmd_whoami(message: types.Message):
+    await message.answer(f"Ваш user_id: `{message.from_user.id}`", parse_mode="Markdown")
+
 
 
 
