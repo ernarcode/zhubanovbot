@@ -966,6 +966,39 @@ async def handle_location(message: types.Message, state: FSMContext):
     # Также можно отправить локацию как отдельное сообщение
     await message.answer_location(latitude=latitude, longitude=longitude)
 
+# Список ваших Telegram user_id, которые имеют право просматривать обратную связь
+ADMIN_IDS = {940771019}  # <-- подставьте сюда свои id
+
+
+@dp.message(Command("view_feedback"))
+async def cmd_view_feedback(message: types.Message):
+    # Проверяем, что запрос пришёл от админа
+    if message.from_user.id not in ADMIN_IDS:
+        return  # просто игнорируем остальных
+
+    # Берём последние 20 отзывов из БД
+    feedbacks = get_recent_feedbacks(limit=20)
+    if not feedbacks:
+        await message.answer("Нет сохранённых отзывов.")
+        return
+
+    # Формируем текст сообщения
+    chunks = []
+    text = ""
+    for fb in feedbacks:
+        # fb = (id, username, message, language, timestamp)
+        fid, username, msg, lang, ts = fb
+        line = f"{fid}. @{username or '—'} ({lang}, {ts.strftime('%Y-%m-%d %H:%M')}):\n{msg}\n\n"
+        # разбиваем по 3000 символов, чтобы не попасть в лимит Telegram
+        if len(text) + len(line) > 3000:
+            chunks.append(text)
+            text = ""
+        text += line
+    chunks.append(text)
+
+    # Шлём частями
+    for chunk in chunks:
+        await message.answer(chunk)
 
 
 # Основная функция запуска бота
