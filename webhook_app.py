@@ -8,7 +8,7 @@ from aiogram.types import Update
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.default import DefaultBotProperties
 
-from handlers import router  # или другой файл с хендлерами
+from main import dp # Dispatcher и хендлеры уже в main.py
 
 TOKEN = os.getenv("BOT_TOKEN")
 
