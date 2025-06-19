@@ -31,7 +31,7 @@ def webhook():
     update = Update.model_validate_json(request.data)
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(handle_update(update))
-     return "ok", 200 
+    return "ok", 200 
 
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
