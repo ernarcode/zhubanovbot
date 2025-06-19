@@ -2,21 +2,19 @@ from flask import Flask, request
 import asyncio
 import os
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot
 from aiogram.enums import ParseMode
 from aiogram.types import Update
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.default import DefaultBotProperties
 
-from main import dp # Dispatcher и хендлеры уже в main.py
+from main import dp  # dp уже содержит все хендлеры
 
 TOKEN = os.getenv("BOT_TOKEN")
 
 app = Flask(__name__)
-dp = Dispatcher()
-dp.include_router(router)
-
 session = AiohttpSession()
+
 bot = Bot(
     token=TOKEN,
     session=session,
@@ -33,7 +31,7 @@ def webhook():
 def set_webhook():
     url = os.getenv("WEBHOOK_URL")
     asyncio.run(_set_webhook(url))
-    return f"Webhook установлен на {url}"
+    return f"Webhook установлен на {url}", 200
 
 async def _set_webhook(url):
     await bot.delete_webhook(drop_pending_updates=True)
