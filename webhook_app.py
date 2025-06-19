@@ -8,9 +8,10 @@ from aiogram.types import Update
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.default import DefaultBotProperties
 
-from main import dp  # dp уже содержит все хендлеры
+from main import dp  # все хендлеры зарегистрированы в main.py
 
 TOKEN = os.getenv("BOT_TOKEN")
+WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 
 app = Flask(__name__)
 session = AiohttpSession()
@@ -29,19 +30,11 @@ def webhook():
 
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
-    from asyncio import get_event_loop
     try:
-        loop = get_event_loop()
-        if loop.is_closed():
-            import asyncio
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-        url = os.getenv("WEBHOOK_URL")
-        loop.run_until_complete(_set_webhook(url))
-        return f"Webhook установлен на {url}", 200
+        asyncio.run(_set_webhook(WEBHOOK_URL))
+        return f"Webhook установлен на {WEBHOOK_URL}", 200
     except Exception as e:
         return f"Ошибка при установке webhook: {e}", 500
-
 
 async def _set_webhook(url):
     await bot.delete_webhook(drop_pending_updates=True)
