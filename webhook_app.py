@@ -22,16 +22,21 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 
+# 👇 Асинхронная обёртка для обработки обновлений
+async def handle_update(update: Update):
+    await dp.feed_update(bot=bot, update=update)
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
     update = Update.model_validate_json(request.data)
-    asyncio.run(dp.feed_update(bot=bot, update=update))
-    return "ok", 200
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(handle_update(update))
 
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
+    loop = asyncio.get_event_loop()
     try:
-        asyncio.run(_set_webhook(WEBHOOK_URL))
+        result = loop.run_until_complete(_set_webhook(WEBHOOK_URL))
         return f"Webhook установлен на {WEBHOOK_URL}", 200
     except Exception as e:
         return f"Ошибка при установке webhook: {e}", 500
