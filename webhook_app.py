@@ -29,9 +29,19 @@ def webhook():
 
 @app.route("/set_webhook", methods=["GET"])
 def set_webhook():
-    url = os.getenv("WEBHOOK_URL")
-    asyncio.run(_set_webhook(url))
-    return f"Webhook установлен на {url}", 200
+    from asyncio import get_event_loop
+    try:
+        loop = get_event_loop()
+        if loop.is_closed():
+            import asyncio
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        url = os.getenv("WEBHOOK_URL")
+        loop.run_until_complete(_set_webhook(url))
+        return f"Webhook установлен на {url}", 200
+    except Exception as e:
+        return f"Ошибка при установке webhook: {e}", 500
+
 
 async def _set_webhook(url):
     await bot.delete_webhook(drop_pending_updates=True)
